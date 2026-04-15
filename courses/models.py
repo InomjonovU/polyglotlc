@@ -17,7 +17,7 @@ class Course(models.Model):
 
     name = models.CharField(max_length=200)
     direction = models.CharField(max_length=20, choices=DIRECTION_CHOICES)
-    description = models.TextField()
+    description = models.TextField(blank=True, default='')
     price = models.PositiveIntegerField(help_text="Oylik narx (so'm)")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='published')
     image = models.ImageField(upload_to='courses/', blank=True)
