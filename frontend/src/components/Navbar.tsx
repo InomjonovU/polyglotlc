@@ -1,29 +1,37 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ChevronDown, LogOut, User, LayoutDashboard, Shield } from 'lucide-react';
+import { Menu, X, ChevronDown, LogOut, User, LayoutDashboard, Shield, Brain } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 
-const navLinks = [
+const mainLinks = [
   { href: '/', label: 'Bosh sahifa' },
   { href: '/courses', label: 'Kurslar' },
-  { href: '/teachers', label: "O'qituvchilar" },
+  { href: '/level-test', label: 'Darajani aniqlash', highlight: true },
   { href: '/mock', label: 'Mock test' },
+];
+
+const moreLinks = [
   { href: '/blog', label: 'Yangiliklar' },
+  { href: '/teachers', label: "O'qituvchilar" },
   { href: '/branches', label: 'Filiallar' },
   { href: '/about', label: 'Biz haqimizda' },
   { href: '/contact', label: 'Aloqa' },
 ];
 
+const allLinks = [...mainLinks, ...moreLinks];
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const { user, logout } = useAuth();
   const pathname = usePathname();
+  const moreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -31,11 +39,22 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMobileOpen(false);
     setDropdownOpen(false);
+    setMoreOpen(false);
   }, [pathname]);
+
+  // Close more dropdown on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
+        setMoreOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
 
   return (
     <nav
@@ -53,19 +72,67 @@ export default function Navbar() {
 
         {/* Desktop nav */}
         <div className="hidden lg:flex items-center gap-1">
-          {navLinks.map((link) => (
+          {mainLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={`text-sm font-medium px-3 py-2 rounded-lg transition-all duration-200 ${
-                pathname === link.href
+                link.highlight
+                  ? pathname === link.href
+                    ? 'text-white bg-primary shadow-lg shadow-primary/20'
+                    : 'text-primary bg-primary-light hover:bg-primary hover:text-white'
+                  : pathname === link.href
+                    ? 'text-primary bg-primary-light'
+                    : 'text-text hover:text-primary hover:bg-primary-light/50'
+              }`}
+            >
+              {link.highlight && <Brain size={14} className="inline mr-1 -mt-0.5" />}
+              {link.label}
+            </Link>
+          ))}
+
+          {/* More dropdown */}
+          <div ref={moreRef} className="relative">
+            <button
+              onClick={() => setMoreOpen(!moreOpen)}
+              className={`text-sm font-medium px-3 py-2 rounded-lg transition-all duration-200 flex items-center gap-1 ${
+                moreLinks.some(l => pathname === l.href)
                   ? 'text-primary bg-primary-light'
                   : 'text-text hover:text-primary hover:bg-primary-light/50'
               }`}
             >
-              {link.label}
-            </Link>
-          ))}
+              Batafsil
+              <ChevronDown size={14} className={`transition-transform ${moreOpen ? 'rotate-180' : ''}`} />
+            </button>
+            <AnimatePresence>
+              {moreOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute left-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-border overflow-hidden"
+                >
+                  <div className="py-1">
+                    {moreLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className={`block px-4 py-2.5 text-sm font-medium transition-colors ${
+                          pathname === link.href
+                            ? 'text-primary bg-primary-light'
+                            : 'text-text hover:bg-bg-secondary hover:text-primary'
+                        }`}
+                        onClick={() => setMoreOpen(false)}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
         <div className="hidden lg:flex items-center gap-3">
@@ -158,17 +225,20 @@ export default function Navbar() {
             className="lg:hidden bg-white border-t border-border overflow-hidden"
           >
             <div className="container-custom py-4 flex flex-col gap-1">
-              {navLinks.map((link) => (
+              {allLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-sm font-medium py-2.5 px-3 rounded-lg transition-colors ${
+                  className={`text-sm font-medium py-2.5 px-3 rounded-lg transition-colors flex items-center gap-2 ${
                     pathname === link.href
                       ? 'text-primary bg-primary-light'
-                      : 'text-text hover:bg-bg-secondary'
+                      : (link as { highlight?: boolean }).highlight
+                        ? 'text-primary bg-primary-light/50'
+                        : 'text-text hover:bg-bg-secondary'
                   }`}
                   onClick={() => setMobileOpen(false)}
                 >
+                  {(link as { highlight?: boolean }).highlight && <Brain size={14} />}
                   {link.label}
                 </Link>
               ))}

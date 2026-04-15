@@ -39,6 +39,7 @@ urlpatterns = [
     path('api/bonus/', include('bonus.urls')),
     path('api/branches/', include('branches.urls')),
     path('api/contact/', include('contact.urls')),
+    path('api/leveltest/', include('leveltest.urls')),
     path('api/admin/stats/', admin_stats, name='admin-stats'),
     path('api/settings/', include('sitesettings.urls')),
 ]

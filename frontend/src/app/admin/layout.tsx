@@ -7,7 +7,7 @@ import { useAuth } from '@/lib/auth';
 import {
   LayoutDashboard, BookOpen, FileText, Users,
   ClipboardCheck, Gift, LogOut, ArrowLeft,
-  GraduationCap, Award, MessageSquare, MapPin, Settings
+  GraduationCap, Award, MessageSquare, MapPin, Settings, Brain
 } from 'lucide-react';
 
 const sidebarLinks = [
@@ -17,6 +17,7 @@ const sidebarLinks = [
   { href: '/admin/certificates', icon: <Award size={18} />, label: 'Sertifikatlar' },
   { href: '/admin/blog', icon: <FileText size={18} />, label: 'Blog' },
   { href: '/admin/students', icon: <Users size={18} />, label: "O'quvchilar" },
+  { href: '/admin/leveltest', icon: <Brain size={18} />, label: 'Daraja testlari' },
   { href: '/admin/mocks', icon: <ClipboardCheck size={18} />, label: 'Mock arizalar' },
   { href: '/admin/messages', icon: <MessageSquare size={18} />, label: 'Xabarlar' },
   { href: '/admin/branches', icon: <MapPin size={18} />, label: 'Filiallar' },

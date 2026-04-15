@@ -49,7 +49,16 @@ export default function AdminCoursesPage() {
       }
       setEditing(null);
       load();
-    } catch { alert('Xatolik'); }
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: unknown } };
+      const data = axiosErr?.response?.data;
+      const msg = data
+        ? typeof data === 'string'
+          ? data
+          : JSON.stringify(data, null, 2)
+        : "Noma'lum xatolik";
+      alert('Xatolik:\n' + msg);
+    }
     finally { setSaving(false); }
   };
 

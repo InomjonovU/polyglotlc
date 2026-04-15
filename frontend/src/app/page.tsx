@@ -6,7 +6,7 @@ import { motion, useInView, AnimatePresence } from 'framer-motion';
 import {
   GraduationCap, Users, BookOpen, Building2,
   ChevronLeft, ChevronRight,
-  ChevronDown, Award, Star,
+  ChevronDown, Award, Star, Brain,
   ArrowRight, Sparkles, TrendingUp, Target, X,
   Calendar, Clock
 } from 'lucide-react';
@@ -78,6 +78,14 @@ const heroSlides = [
     href: '/register',
     icon: <TrendingUp size={24} />,
     emoji: '📚',
+  },
+  {
+    title: "Ingliz tili darajangizni biling!",
+    subtitle: "Bepul online test orqali o'z darajangizni aniqlang — A1 dan C2 gacha. Istalgancha qayta ishlash mumkin!",
+    cta: 'Testni boshlash',
+    href: '/level-test',
+    icon: <Brain size={24} />,
+    emoji: '🧠',
   },
   {
     title: "O'z darajangizni tekshiring!",

@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'mocktest',
     'bonus',
     'branches',
+    'leveltest',
     'contact',
     'sitesettings',
 ]

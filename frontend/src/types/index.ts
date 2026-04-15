@@ -152,6 +152,43 @@ export interface BlogImage {
   order: number;
 }
 
+export interface LevelTest {
+  id: number;
+  title: string;
+  description: string;
+  time_limit: number;
+  is_active: boolean;
+  questions_count: number;
+  questions?: Question[];
+  created_at: string;
+}
+
+export interface Question {
+  id: number;
+  text: string;
+  option_a: string;
+  option_b: string;
+  option_c: string;
+  option_d: string;
+  correct?: string;
+  order: number;
+}
+
+export interface TestResultData {
+  id: number;
+  test: number;
+  test_title: string;
+  name: string;
+  phone: string;
+  total_questions: number;
+  correct_answers: number;
+  score: number;
+  level: string;
+  level_description: string;
+  time_spent: number;
+  created_at: string;
+}
+
 export interface SiteSettings {
   id: number;
   site_name: string;
