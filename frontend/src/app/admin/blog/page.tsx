@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Plus, Pencil, Trash2, X, Loader2, ImagePlus } from 'lucide-react';
 import api from '@/lib/api';
-import { BlogPost } from '@/types';
+import { BlogPost, BlogImage } from '@/types';
 import RichTextEditor from '@/components/RichTextEditor';
 
 export default function AdminBlogPage() {
@@ -11,7 +11,10 @@ export default function AdminBlogPage() {
   const [editing, setEditing] = useState<number | 'new' | null>(null);
   const [form, setForm] = useState({ title: '', category: 'news', content: '', status: 'draft' });
   const [coverImage, setCoverImage] = useState<File | null>(null);
+  const [existingCover, setExistingCover] = useState<string | null>(null);
   const [extraImages, setExtraImages] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<BlogImage[]>([]);
+  const [removedImageIds, setRemovedImageIds] = useState<number[]>([]);
   const [saving, setSaving] = useState(false);
 
   const load = () => api.get('blog/posts/').then((r) => setPosts(r.data.results || r.data));
@@ -20,14 +23,26 @@ export default function AdminBlogPage() {
   const openNew = () => {
     setForm({ title: '', category: 'news', content: '', status: 'draft' });
     setCoverImage(null);
+    setExistingCover(null);
     setExtraImages([]);
+    setExistingImages([]);
+    setRemovedImageIds([]);
     setEditing('new');
   };
 
-  const openEdit = (p: BlogPost) => {
+  const openEdit = async (p: BlogPost) => {
     setForm({ title: p.title, category: p.category, content: p.content, status: p.status });
     setCoverImage(null);
+    setExistingCover(p.image || null);
     setExtraImages([]);
+    setRemovedImageIds([]);
+    // Load existing extra images
+    try {
+      const res = await api.get(`blog/posts/${p.slug}/images/`);
+      setExistingImages(res.data.results || res.data);
+    } catch {
+      setExistingImages([]);
+    }
     setEditing(p.id);
   };
 
@@ -51,19 +66,34 @@ export default function AdminBlogPage() {
         savedPost = res.data;
       }
 
+      // Delete removed images
+      for (const imgId of removedImageIds) {
+        const slug = savedPost.slug;
+        await api.delete(`blog/posts/${slug}/images/${imgId}/`).catch(() => {});
+      }
+
       // Upload extra images
       if (extraImages.length > 0 && savedPost.slug) {
         for (let i = 0; i < extraImages.length; i++) {
           const imgData = new FormData();
           imgData.append('image', extraImages[i]);
-          imgData.append('order', String(i));
+          imgData.append('order', String(existingImages.length + i));
           await api.post(`blog/posts/${savedPost.slug}/images/`, imgData, { headers: { 'Content-Type': 'multipart/form-data' } }).catch(() => {});
         }
       }
 
       setEditing(null);
       load();
-    } catch { alert('Xatolik'); }
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: unknown } };
+      const data = axiosErr?.response?.data;
+      const msg = data
+        ? typeof data === 'string'
+          ? data
+          : JSON.stringify(data, null, 2)
+        : "Noma'lum xatolik";
+      alert('Xatolik:\n' + msg);
+    }
     finally { setSaving(false); }
   };
 
@@ -124,6 +154,34 @@ export default function AdminBlogPage() {
 
               <div>
                 <label className="block text-sm font-semibold mb-1.5">Asosiy rasm</label>
+                {(existingCover && !coverImage) ? (
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="relative w-32 h-20 rounded-xl overflow-hidden bg-bg-secondary group">
+                      <img src={existingCover} alt="" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => setExistingCover(null)}
+                        className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                    <span className="text-xs text-text-secondary">Yangi rasm tanlash uchun pastdagi tugmani bosing</span>
+                  </div>
+                ) : coverImage ? (
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="relative w-32 h-20 rounded-xl overflow-hidden bg-bg-secondary group">
+                      <img src={URL.createObjectURL(coverImage)} alt="" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => setCoverImage(null)}
+                        className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
                 <input type="file" accept="image/*" className="input-field" onChange={(e) => setCoverImage(e.target.files?.[0] || null)} />
               </div>
 
@@ -136,8 +194,19 @@ export default function AdminBlogPage() {
               <div>
                 <label className="block text-sm font-semibold mb-1.5">Qo&apos;shimcha rasmlar</label>
                 <div className="flex flex-wrap gap-3 mb-3">
+                  {existingImages.filter(img => !removedImageIds.includes(img.id)).map((img) => (
+                    <div key={`existing-${img.id}`} className="relative w-24 h-24 rounded-xl overflow-hidden bg-bg-secondary group">
+                      <img src={img.image} alt="" className="w-full h-full object-cover" />
+                      <button
+                        onClick={() => setRemovedImageIds([...removedImageIds, img.id])}
+                        className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                  ))}
                   {extraImages.map((file, i) => (
-                    <div key={i} className="relative w-24 h-24 rounded-xl overflow-hidden bg-bg-secondary group">
+                    <div key={`new-${i}`} className="relative w-24 h-24 rounded-xl overflow-hidden bg-bg-secondary group">
                       <img src={URL.createObjectURL(file)} alt="" className="w-full h-full object-cover" />
                       <button
                         onClick={() => removeExtraImage(i)}
