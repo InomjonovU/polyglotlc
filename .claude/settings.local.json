@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m pip install djangorestframework djangorestframework-simplejwt django-cors-headers django-filter pillow)",
+      "Bash(python manage.py startapp accounts)",
+      "Bash(python manage.py startapp courses)",
+      "Bash(python manage.py startapp blog)",
+      "Bash(python manage.py startapp mocktest)",
+      "Bash(python manage.py startapp bonus)",
+      "Bash(python manage.py makemigrations)",
+      "Bash(python manage.py migrate)",
+      "Bash(DJANGO_SUPERUSER_PASSWORD=admin123 python manage.py createsuperuser --username admin --email admin@polyglotlc.uz --noinput)",
+      "Bash(npx create-next-app@latest frontend --typescript --tailwind --eslint --app --src-dir --no-import-alias --use-npm)",
+      "Bash(npm install:*)",
+      "Bash(npx next:*)",
+      "Bash(D:/polyglotlc/env/Scripts/pip install:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npm run:*)",
+      "Bash(python manage.py createsuperuser --noinput --username admin --email admin@polyglotlc.uz)",
+      "Bash(DJANGO_SUPERUSER_PASSWORD=admin123 python manage.py createsuperuser --noinput --username admin --email admin@polyglotlc.uz)",
+      "Bash(python -c ':*)",
+      "Bash(python manage.py check)",
+      "Bash(awk '{print $NF}')",
+      "Bash([ -f \"/d/polyglotlc/$app/models.py\" ])",
+      "Bash(python manage.py startapp sitesettings)",
+      "Bash(python manage.py makemigrations sitesettings)",
+      "Bash(find /d/polyglotlc -name \"*.tsx\" -type f ! -path \"*/node_modules/*\" ! -path \"*/env/*\" -exec grep -l \"direction\" {} \\\\;)"
+    ]
+  }
+}
