@@ -4,7 +4,7 @@ import axios, {
 } from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:8000/api/",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/",
   headers: {
     "Content-Type": "application/json",
   },
@@ -75,7 +75,7 @@ api.interceptors.response.use(
 
       try {
         const { data } = await axios.post(
-          "http://localhost:8000/api/auth/token/refresh/",
+          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/"}auth/token/refresh/`,
           { refresh: refreshToken },
         );
         const newAccess: string = data.access;
