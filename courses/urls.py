@@ -10,4 +10,11 @@ router.register('certificates', views.CertificateViewSet, basename='certificate'
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('teachers/<int:teacher_pk>/certificates/', views.TeacherCertificateViewSet.as_view({
+        'get': 'list',
+        'post': 'create',
+    })),
+    path('teachers/<int:teacher_pk>/certificates/<int:pk>/', views.TeacherCertificateViewSet.as_view({
+        'delete': 'destroy',
+    })),
 ]

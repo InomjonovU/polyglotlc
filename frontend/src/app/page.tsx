@@ -7,7 +7,7 @@ import {
   GraduationCap, Users, BookOpen, Building2,
   ChevronLeft, ChevronRight,
   ChevronDown, Award, Star, Brain,
-  ArrowRight, Sparkles, TrendingUp, Target, X,
+  ArrowRight, Sparkles, TrendingUp, Target, X, Trophy,
   Calendar, Clock
 } from 'lucide-react';
 import api from '@/lib/api';
@@ -218,9 +218,10 @@ export default function HomePage() {
       {/* ═══ STATISTIKA ═══ */}
       <section className="py-16 bg-bg-secondary">
         <div className="container-custom">
-          <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <StaggerContainer className="grid grid-cols-2 md:grid-cols-5 gap-6">
             {[
               { icon: <Users size={28} />, num: 300, suffix: '+', label: "O'quvchilar", color: 'from-blue-500 to-blue-600' },
+              { icon: <Trophy size={28} />, num: 150, suffix: '+', label: "Bitirganlar", color: 'from-rose-500 to-rose-600' },
               { icon: <BookOpen size={28} />, num: 5, suffix: '+', label: "Yillik tajriba", color: 'from-emerald-500 to-emerald-600' },
               { icon: <GraduationCap size={28} />, num: 30, suffix: '+', label: "O'qituvchilar", color: 'from-purple-500 to-purple-600' },
               { icon: <Building2 size={28} />, num: 2, suffix: '', label: 'Filiallar', color: 'from-amber-500 to-amber-600' },

@@ -31,24 +31,34 @@ export interface CourseApplication {
   created_at: string;
 }
 
+export interface TeacherCertImage {
+  id: number;
+  title: string;
+  image: string;
+  order: number;
+}
+
 export interface Teacher {
   id: number;
   full_name: string;
   direction: string;
   direction_display: string;
   bio: string;
+  about: string;
   photo: string | null;
   experience_years: number;
   certificates: string;
   certificates_list: string[];
+  certificate_images?: TeacherCertImage[];
 }
 
 export interface Certificate {
   id: number;
   student_name: string;
   certificate_name: string;
-  score: number;
+  score: string;
   image: string | null;
+  created_at?: string;
 }
 
 export interface Comment {

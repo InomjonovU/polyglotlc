@@ -4,22 +4,26 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ChevronDown, LogOut, User, LayoutDashboard, Shield, Brain } from 'lucide-react';
+import {
+  Menu, X, ChevronDown, LogOut, LayoutDashboard, Shield, Brain,
+  Home, BookOpen, ClipboardCheck, Newspaper, Users, MapPin, Info, Phone, Trophy,
+} from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 
 const mainLinks = [
-  { href: '/', label: 'Bosh sahifa' },
-  { href: '/courses', label: 'Kurslar' },
-  { href: '/level-test', label: 'Darajani aniqlash', highlight: true },
-  { href: '/mock', label: 'Mock test' },
+  { href: '/', label: 'Bosh sahifa', icon: Home },
+  { href: '/courses', label: 'Kurslar', icon: BookOpen },
+  { href: '/level-test', label: 'Darajani aniqlash', icon: Brain, highlight: true },
+  { href: '/mock', label: 'Mock test', icon: ClipboardCheck },
 ];
 
 const moreLinks = [
-  { href: '/blog', label: 'Yangiliklar' },
-  { href: '/teachers', label: "O'qituvchilar" },
-  { href: '/branches', label: 'Filiallar' },
-  { href: '/about', label: 'Biz haqimizda' },
-  { href: '/contact', label: 'Aloqa' },
+  { href: '/results', label: 'Natijalar', icon: Trophy },
+  { href: '/blog', label: 'Yangiliklar', icon: Newspaper },
+  { href: '/teachers', label: "O'qituvchilar", icon: Users },
+  { href: '/branches', label: 'Filiallar', icon: MapPin },
+  { href: '/about', label: 'Biz haqimizda', icon: Info },
+  { href: '/contact', label: 'Aloqa', icon: Phone },
 ];
 
 const allLinks = [...mainLinks, ...moreLinks];
@@ -86,7 +90,7 @@ export default function Navbar() {
                     : 'text-text hover:text-primary hover:bg-primary-light/50'
               }`}
             >
-              {link.highlight && <Brain size={14} className="inline mr-1 -mt-0.5" />}
+              <link.icon size={14} className="inline mr-1 -mt-0.5" />
               {link.label}
             </Link>
           ))}
@@ -118,13 +122,14 @@ export default function Navbar() {
                       <Link
                         key={link.href}
                         href={link.href}
-                        className={`block px-4 py-2.5 text-sm font-medium transition-colors ${
+                        className={`flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors ${
                           pathname === link.href
                             ? 'text-primary bg-primary-light'
                             : 'text-text hover:bg-bg-secondary hover:text-primary'
                         }`}
                         onClick={() => setMoreOpen(false)}
                       >
+                        <link.icon size={16} className="text-text-secondary" />
                         {link.label}
                       </Link>
                     ))}
@@ -238,7 +243,7 @@ export default function Navbar() {
                   }`}
                   onClick={() => setMobileOpen(false)}
                 >
-                  {(link as { highlight?: boolean }).highlight && <Brain size={14} />}
+                  <link.icon size={16} />
                   {link.label}
                 </Link>
               ))}

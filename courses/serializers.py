@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Course, CourseApplication
-from .teachers import Teacher, Certificate
+from .teachers import Teacher, Certificate, TeacherCertificate
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -20,6 +20,12 @@ class CourseApplicationSerializer(serializers.ModelSerializer):
         read_only_fields = ['status']
 
 
+class TeacherCertificateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeacherCertificate
+        fields = ['id', 'title', 'image', 'order']
+
+
 class TeacherSerializer(serializers.ModelSerializer):
     direction_display = serializers.CharField(source='get_direction_display', read_only=True)
     certificates_list = serializers.SerializerMethodField()
@@ -32,6 +38,13 @@ class TeacherSerializer(serializers.ModelSerializer):
         if obj.certificates:
             return [c.strip() for c in obj.certificates.split(',')]
         return []
+
+
+class TeacherDetailSerializer(TeacherSerializer):
+    certificate_images = TeacherCertificateSerializer(many=True, read_only=True)
+
+    class Meta(TeacherSerializer.Meta):
+        fields = TeacherSerializer.Meta.fields
 
 
 class CertificateSerializer(serializers.ModelSerializer):

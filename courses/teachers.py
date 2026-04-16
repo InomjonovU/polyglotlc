@@ -12,6 +12,7 @@ class Teacher(models.Model):
         ('other', 'Boshqa'),
     ])
     bio = models.TextField(blank=True)
+    about = models.TextField(blank=True, default='', help_text="Batafsil ma'lumot (inner sahifa uchun)")
     photo = models.ImageField(upload_to='teachers/', blank=True)
     experience_years = models.PositiveIntegerField(default=0)
     certificates = models.TextField(blank=True, help_text="Sertifikatlar (vergul bilan)")
@@ -21,6 +22,19 @@ class Teacher(models.Model):
 
     def __str__(self):
         return self.full_name
+
+
+class TeacherCertificate(models.Model):
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='certificate_images')
+    title = models.CharField(max_length=200)
+    image = models.ImageField(upload_to='teachers/certificates/')
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.teacher.full_name} - {self.title}"
 
 
 class Certificate(models.Model):

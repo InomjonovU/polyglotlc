@@ -1,10 +1,12 @@
 from rest_framework import viewsets, permissions, filters
+from rest_framework.parsers import MultiPartParser, FormParser
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Course, CourseApplication
-from .teachers import Teacher, Certificate
+from .teachers import Teacher, Certificate, TeacherCertificate
 from .serializers import (
     CourseSerializer, CourseApplicationSerializer,
-    TeacherSerializer, CertificateSerializer
+    TeacherSerializer, TeacherDetailSerializer,
+    CertificateSerializer, TeacherCertificateSerializer
 )
 
 
@@ -44,10 +46,27 @@ class CourseApplicationViewSet(viewsets.ModelViewSet):
 
 class TeacherViewSet(viewsets.ModelViewSet):
     queryset = Teacher.objects.all()
-    serializer_class = TeacherSerializer
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['direction']
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return TeacherDetailSerializer
+        return TeacherSerializer
+
+
+class TeacherCertificateViewSet(viewsets.ModelViewSet):
+    serializer_class = TeacherCertificateSerializer
+    permission_classes = [IsAdminOrReadOnly]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def get_queryset(self):
+        return TeacherCertificate.objects.filter(teacher_id=self.kwargs.get('teacher_pk'))
+
+    def perform_create(self, serializer):
+        teacher = Teacher.objects.get(pk=self.kwargs['teacher_pk'])
+        serializer.save(teacher=teacher)
 
 
 class CertificateViewSet(viewsets.ModelViewSet):
