@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { UserPlus, Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
+import PhoneInput, { getCleanPhone } from '@/components/PhoneInput';
 
 function RegisterForm() {
   const router = useRouter();
@@ -15,7 +16,7 @@ function RegisterForm() {
     first_name: '',
     last_name: '',
     email: '',
-    phone: '',
+    phone: '+998 ',
     password: '',
     password_confirm: '',
     referral_code_input: searchParams.get('ref') || '',
@@ -40,7 +41,7 @@ function RegisterForm() {
 
     setLoading(true);
     try {
-      await register(form);
+      await register({ ...form, phone: getCleanPhone(form.phone) });
       router.push('/login?registered=1');
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: Record<string, unknown> }; message?: string };
@@ -108,7 +109,11 @@ function RegisterForm() {
         </div>
         <div>
           <label className="block text-sm font-semibold mb-1.5">Telefon raqam</label>
-          <input type="tel" className="input-field" placeholder="+998 90 123 45 67" value={form.phone} onChange={(e) => update('phone', e.target.value)} />
+          <PhoneInput
+            value={form.phone}
+            onChange={(v) => update('phone', v)}
+            className="input-field"
+          />
         </div>
         <div>
           <label className="block text-sm font-semibold mb-1.5">Parol</label>

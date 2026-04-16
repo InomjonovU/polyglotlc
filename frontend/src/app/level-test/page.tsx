@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import api from '@/lib/api';
 import { LevelTest, Question } from '@/types';
+import PhoneInput, { getCleanPhone, isPhoneComplete } from '@/components/PhoneInput';
 
 const LEVEL_COLORS: Record<string, string> = {
   A1: 'from-red-400 to-red-500',
@@ -50,7 +51,7 @@ export default function LevelTestPage() {
   const [result, setResult] = useState<Result | null>(null);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [form, setForm] = useState({ name: '', phone: '' });
+  const [form, setForm] = useState({ name: '', phone: '+998 ' });
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef(0);
 
@@ -122,7 +123,7 @@ export default function LevelTestPage() {
     try {
       const r = await api.post(`leveltest/tests/${selectedTest.id}/submit/`, {
         name: form.name,
-        phone: form.phone,
+        phone: getCleanPhone(form.phone),
         answers: answerList,
         time_spent: timeSpent,
       });
@@ -142,7 +143,7 @@ export default function LevelTestPage() {
     setQuestions([]);
     setAnswers({});
     setResult(null);
-    setForm({ name: '', phone: '' });
+    setForm({ name: '', phone: '+998 ' });
   };
 
   const answeredCount = Object.keys(answers).length;
@@ -269,19 +270,18 @@ export default function LevelTestPage() {
                     <label className="block text-sm font-semibold mb-1.5">
                       <Phone size={14} className="inline mr-1" />Telefon raqam
                     </label>
-                    <input
-                      className="input-field"
-                      type="tel"
-                      placeholder="+998 90 123 45 67"
+                    <PhoneInput
                       value={form.phone}
-                      onChange={e => setForm({ ...form, phone: e.target.value })}
+                      onChange={(v) => setForm({ ...form, phone: v })}
+                      className="input-field"
+                      required
                     />
                   </div>
                 </div>
 
                 <button
                   onClick={startTest}
-                  disabled={loading || !form.name.trim() || !form.phone.trim()}
+                  disabled={loading || !form.name.trim() || !isPhoneComplete(form.phone)}
                   className="btn-primary w-full disabled:opacity-50"
                 >
                   {loading ? <Loader2 size={16} className="animate-spin" /> : <>Testni boshlash <ArrowRight size={16} /></>}

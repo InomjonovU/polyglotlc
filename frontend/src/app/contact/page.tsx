@@ -6,10 +6,11 @@ import { Phone, Mail, MapPin, Send, CheckCircle, Clock, Loader2, AlertCircle, Me
 import api from '@/lib/api';
 import { Branch } from '@/types';
 import { useSiteSettings } from '@/lib/site-settings';
+import PhoneInput, { getCleanPhone, isPhoneComplete } from '@/components/PhoneInput';
 
 export default function ContactPage() {
   const s = useSiteSettings();
-  const [form, setForm] = useState({ name: '', phone: '', message: '' });
+  const [form, setForm] = useState({ name: '', phone: '+998 ', message: '' });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -24,7 +25,7 @@ export default function ContactPage() {
     setLoading(true);
     setError('');
     try {
-      await api.post('contact/', form);
+      await api.post('contact/', { ...form, phone: getCleanPhone(form.phone) });
       setSubmitted(true);
     } catch (err: unknown) {
       const axiosErr = err as { response?: unknown; message?: string };
@@ -207,13 +208,11 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-1.5">Telefon raqam</label>
-                  <input
-                    type="tel"
-                    required
-                    className="input-field"
-                    placeholder="+998 90 123 45 67"
+                  <PhoneInput
                     value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    onChange={(v) => setForm({ ...form, phone: v })}
+                    className="input-field"
+                    required
                   />
                 </div>
                 <div>
@@ -227,7 +226,7 @@ export default function ContactPage() {
                     onChange={(e) => setForm({ ...form, message: e.target.value })}
                   />
                 </div>
-                <button type="submit" disabled={loading} className="btn-primary w-full">
+                <button type="submit" disabled={loading || !isPhoneComplete(form.phone)} className="btn-primary w-full">
                   {loading ? (
                     <span className="flex items-center gap-2"><Loader2 size={18} className="animate-spin" /> Yuborilmoqda...</span>
                   ) : (

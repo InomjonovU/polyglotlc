@@ -4,9 +4,10 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ClipboardCheck, Phone, ArrowRight, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 import api from '@/lib/api';
+import PhoneInput, { getCleanPhone, isPhoneComplete } from '@/components/PhoneInput';
 
 export default function MockTestPage() {
-  const [form, setForm] = useState({ name: '', phone: '', test_type: 'ielts', note: '' });
+  const [form, setForm] = useState({ name: '', phone: '+998 ', test_type: 'ielts', note: '' });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -21,7 +22,7 @@ export default function MockTestPage() {
     setLoading(true);
     setError('');
     try {
-      await api.post('mock/', form);
+      await api.post('mock/', { ...form, phone: getCleanPhone(form.phone) });
       setSubmitted(true);
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: Record<string, unknown> }; message?: string };
@@ -100,13 +101,11 @@ export default function MockTestPage() {
 
             <div>
               <label className="block text-sm font-semibold mb-1.5">Telefon raqam</label>
-              <input
-                type="tel"
-                required
-                placeholder="+998 90 123 45 67"
-                className="input-field"
+              <PhoneInput
                 value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                onChange={(v) => setForm({ ...form, phone: v })}
+                className="input-field"
+                required
               />
             </div>
 
@@ -150,7 +149,7 @@ export default function MockTestPage() {
               />
             </div>
 
-            <button type="submit" disabled={loading} className="btn-primary w-full">
+            <button type="submit" disabled={loading || !isPhoneComplete(form.phone)} className="btn-primary w-full">
               {loading ? (
                 <span className="flex items-center gap-2">
                   <Loader2 size={18} className="animate-spin" />

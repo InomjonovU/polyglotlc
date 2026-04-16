@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, ArrowRight, CheckCircle, Loader2, AlertCircle, X } from 'lucide-react';
 import api from '@/lib/api';
 import { Course } from '@/types';
+import PhoneInput, { getCleanPhone, isPhoneComplete } from '@/components/PhoneInput';
 
 const filters = [
   { value: '', label: 'Barchasi' },
@@ -20,7 +21,7 @@ export default function CoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [filter, setFilter] = useState('');
   const [applying, setApplying] = useState<number | null>(null);
-  const [form, setForm] = useState({ name: '', phone: '' });
+  const [form, setForm] = useState({ name: '', phone: '+998 ' });
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -32,10 +33,10 @@ export default function CoursesPage() {
   const handleApply = async (courseId: number) => {
     setLoading(true);
     try {
-      await api.post('applications/', { ...form, course: courseId });
+      await api.post('applications/', { ...form, phone: getCleanPhone(form.phone), course: courseId });
       setSuccess(true);
       setApplying(null);
-      setForm({ name: '', phone: '' });
+      setForm({ name: '', phone: '+998 ' });
       setTimeout(() => setSuccess(false), 4000);
     } catch {
       alert("Xatolik yuz berdi. Qaytadan urinib ko'ring.");
@@ -124,12 +125,11 @@ export default function CoursesPage() {
                       value={form.name}
                       onChange={(e) => setForm({ ...form, name: e.target.value })}
                     />
-                    <input
-                      type="tel"
-                      placeholder="+998 90 123 45 67"
-                      className="input-field"
+                    <PhoneInput
                       value={form.phone}
-                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                      onChange={(v) => setForm({ ...form, phone: v })}
+                      className="input-field"
+                      required
                     />
                     <div className="flex gap-2">
                       <button onClick={() => handleApply(course.id)} disabled={loading} className="btn-primary text-sm flex-1">

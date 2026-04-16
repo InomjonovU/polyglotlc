@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { User, Lock, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import api from '@/lib/api';
+import PhoneInput, { getCleanPhone } from '@/components/PhoneInput';
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
@@ -29,7 +30,7 @@ export default function ProfilePage() {
   const saveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.patch('auth/profile/', form);
+      await api.patch('auth/profile/', { ...form, phone: getCleanPhone(form.phone) });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch {
@@ -81,7 +82,11 @@ export default function ProfilePage() {
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Telefon</label>
-              <input type="tel" className="input-field" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+              <PhoneInput
+                value={form.phone}
+                onChange={(v) => setForm({ ...form, phone: v })}
+                className="input-field"
+              />
             </div>
             <button type="submit" className="btn-primary w-full flex items-center justify-center gap-2">
               {saved ? <><CheckCircle size={18} /> Saqlandi!</> : 'Saqlash'}
