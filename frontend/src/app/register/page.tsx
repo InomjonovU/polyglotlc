@@ -4,14 +4,17 @@ import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { UserPlus, Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
+import { UserPlus, Eye, EyeOff, AlertCircle, Loader2, CheckCircle, ExternalLink } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
+import { useSiteSettings } from '@/lib/site-settings';
 import PhoneInput, { getCleanPhone } from '@/components/PhoneInput';
 
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { register } = useAuth();
+  const s = useSiteSettings();
+  const [step, setStep] = useState<'telegram' | 'form'>(searchParams.get('ref') ? 'form' : 'telegram');
   const [form, setForm] = useState({
     first_name: '',
     last_name: '',
@@ -65,6 +68,53 @@ function RegisterForm() {
   };
 
   const update = (key: string, value: string) => setForm({ ...form, [key]: value });
+
+  if (step === 'telegram') {
+    return (
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        <div className="text-center mb-8">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
+            className="w-16 h-16 bg-gradient-to-br from-[#229ED9] to-[#1a8bc7] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-[#229ED9]/20"
+          >
+            <span className="text-white font-bold text-xl">TG</span>
+          </motion.div>
+          <h1 className="text-2xl font-extrabold">Telegram kanalga obuna bo&apos;ling</h1>
+          <p className="text-text-secondary text-sm mt-2">Ro&apos;yxatdan o&apos;tishdan oldin bizning Telegram kanalga obuna bo&apos;ling</p>
+        </div>
+
+        <div className="card flex flex-col gap-5">
+          <div className="bg-[#229ED9]/10 border border-[#229ED9]/20 rounded-xl p-5 text-center">
+            <p className="text-sm text-text-secondary mb-4">Kanalda yangiliklar, chegirmalar va foydali materiallar chop etiladi</p>
+            <a
+              href={s.telegram || 'https://t.me/polyglotlc'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-[#229ED9] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[#1a8bc7] transition-colors"
+            >
+              <ExternalLink size={18} />
+              Telegram kanalga o&apos;tish
+            </a>
+          </div>
+
+          <button
+            onClick={() => setStep('form')}
+            className="btn-primary w-full flex items-center justify-center gap-2"
+          >
+            <CheckCircle size={18} />
+            Obuna bo&apos;ldim, davom etish
+          </button>
+
+          <p className="text-center text-sm text-text-secondary">
+            Akkauntingiz bormi?{' '}
+            <Link href="/login" className="text-primary font-semibold hover:underline">Kirish</Link>
+          </p>
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>

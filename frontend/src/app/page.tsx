@@ -330,14 +330,16 @@ export default function HomePage() {
               { id: 4, full_name: "Nodira Umarova", direction_display: "Matematika", bio: "Oliy toifali, 8 yillik tajriba", photo: null },
             ] as (Teacher | { id: number; full_name: string; direction_display: string; bio: string; photo: null })[]).map((t) => (
               <StaggerItem key={t.id}>
-                <div className="card card-glow group cursor-pointer hover:-translate-y-2 transition-all duration-300">
-                  <div className="w-full aspect-[3/4] bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl mb-4 overflow-hidden flex items-center justify-center relative">
-                    {t.photo ? <img src={t.photo} alt={t.full_name} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" /> : <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center"><Users size={36} className="text-primary/40" /></div>}
-                    <div className="absolute top-3 right-3"><span className="badge badge-primary text-xs">{t.direction_display}</span></div>
+                <Link href={`/teachers/${t.id}`} className="block">
+                  <div className="card card-glow group cursor-pointer hover:-translate-y-2 transition-all duration-300">
+                    <div className="w-full aspect-[3/4] bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl mb-4 overflow-hidden flex items-center justify-center relative">
+                      {t.photo ? <img src={t.photo} alt={t.full_name} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" /> : <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center"><Users size={36} className="text-primary/40" /></div>}
+                      <div className="absolute top-3 right-3"><span className="badge badge-primary text-xs">{t.direction_display}</span></div>
+                    </div>
+                    <h3 className="font-bold text-lg group-hover:text-primary transition-colors">{t.full_name}</h3>
+                    <p className="text-text-secondary text-sm mt-1">{t.bio}</p>
                   </div>
-                  <h3 className="font-bold text-lg group-hover:text-primary transition-colors">{t.full_name}</h3>
-                  <p className="text-text-secondary text-sm mt-1">{t.bio}</p>
-                </div>
+                </Link>
               </StaggerItem>
             ))}
           </StaggerContainer>
