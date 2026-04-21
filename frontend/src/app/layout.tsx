@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   title: "PolyglotLC — O'quv Markazi",
   description:
     "Ingliz tili, IT va dasturlash kurslari. Professional o'qituvchilar, zamonaviy metodika.",
+  verification: {
+    google: 'Nq0HUQEoMUFDH-Q4VURz1u9V228dJouVCBejOyxiJgQ',
+  },
 };
 
 export default function RootLayout({
